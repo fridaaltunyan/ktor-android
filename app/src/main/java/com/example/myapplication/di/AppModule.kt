@@ -1,9 +1,15 @@
 package com.example.myapplication.di
 
+import com.example.myapplication.data.repo_impl.FootballersRepositoryImpl
 import com.example.myapplication.data.service.FootballersApi
 import com.example.myapplication.data.service.FootballersApi.Companion.BASE_URL
-import com.example.myapplication.data.RabbitRepository
-import com.example.myapplication.data.repo_impl.FootballersRepositoryImpl
+import com.example.myapplication.dispatcher.CoroutineDispatcherProvider
+import com.example.myapplication.dispatcher.CoroutineDispatcherProviderImpl
+import com.example.myapplication.domain.repo.FootballersRepository
+import com.example.myapplication.domain.usecases.GetFootballersUseCase
+import com.example.myapplication.domain.usecases.GetFootballersUseCaseImpl
+import com.example.myapplication.domain.usecases.GetSingleFootballerUseCase
+import com.example.myapplication.domain.usecases.GetSingleFootballerUseCaseImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,13 +46,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesRabbitRepository(
+    fun provideFootballerRepository(
         footballersApi: FootballersApi,
-    ): RabbitRepository = FootballersRepositoryImpl(footballersApi)
+    ): FootballersRepository = FootballersRepositoryImpl(footballersApi)
 
     @Provides
     @Singleton
-    fun provideRabbitsApi(okHttpClient: OkHttpClient): FootballersApi {
+    fun provideFootballerApi(okHttpClient: OkHttpClient): FootballersApi {
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BASE_URL)
@@ -54,4 +60,23 @@ object AppModule {
             .build()
             .create(FootballersApi::class.java)
     }
+
+    @Provides
+    fun provideGetFootballersUseCase(
+        footballersRepository: FootballersRepository,
+        provider: CoroutineDispatcherProvider
+    ): GetFootballersUseCase =
+        GetFootballersUseCaseImpl(footballersRepository, provider)
+
+    @Provides
+    fun provideGetSingleFootballerUseCase(
+        footballersRepository: FootballersRepository,
+        provider: CoroutineDispatcherProvider
+    ): GetSingleFootballerUseCase =
+        GetSingleFootballerUseCaseImpl(footballersRepository, provider)
+
+    @Provides
+    @Singleton
+    fun provideCoroutineDispatcher(): CoroutineDispatcherProvider =
+        CoroutineDispatcherProviderImpl()
 }

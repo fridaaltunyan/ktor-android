@@ -13,7 +13,7 @@ class FootballersRepositoryImpl @Inject constructor(
     private val footballersApi: FootballersApi,
 ) : FootballersRepository {
     override fun getAllFootballers(page: Int): Flow<List<UIFootballer>> {
-        return flow { emit(footballersApi.getAllFootballers(page).map { it.toUIFootballer() }) }
+        return flow { emit(footballersApi.getAllFootballers(page).footballers.map { it.toUIFootballer() }) }
     }
 
     override fun getFootballer(name: String): Flow<UIFootballer> {

@@ -3,11 +3,9 @@ package com.example.myapplication
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.myapplication.ui.screens.FootballersScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,13 +15,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(32.dp)
-                ) {
-
-                }
+                val mainViewModel: MainViewModel = hiltViewModel()
+                FootballersScreen(modifier = Modifier, mainViewModel = mainViewModel)
             }
         }
     }

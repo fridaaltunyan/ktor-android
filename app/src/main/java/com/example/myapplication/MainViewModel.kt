@@ -22,6 +22,7 @@ class MainViewModel @Inject constructor(
     private val _state = MutableStateFlow(FootballerState())
     val state: StateFlow<FootballerState> = _state
 
+
     init {
         getAllFootballers()
     }
@@ -30,6 +31,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             when (intent) {
                 is FootballerIntent.LoadFootballers -> getAllFootballers()
+                is FootballerIntent.ClickOnSingleItem -> getSingleFootballer(intent.name)
                 // ... Other Intents goes here...
             }
         }
@@ -57,12 +59,24 @@ class MainViewModel @Inject constructor(
 
     }
 
-    fun getSingleFootballer(name: String) {
+    private fun getSingleFootballer(name: String) {
         getSingleFootballerUseCase(name).subscribe(
             viewModelScope,
-            error = {},
-            onStart = {},
-            success = {},
+            error = {
+                _state.update {
+                    it.copy(loading = false, singleFootballer = null, error = it.error)
+                }
+            },
+            onStart = {
+                _state.update {
+                    it.copy(loading = true)
+                }
+            },
+            success = { player ->
+                _state.update {
+                    it.copy(loading = false, singleFootballer = player, error = null)
+                }
+            },
         )
     }
 
